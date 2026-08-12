@@ -5,7 +5,12 @@ import type { BoardItem, NewBoardItem } from "../types";
 import AddItemBar from "./AddItemBar";
 import ItemCard from "./ItemCard";
 
-export default function Whiteboard({ boardId }: { boardId: number }) {
+interface WhiteboardProps {
+  boardId: number;
+  accessLevel: "owner" | "editor" | "viewer";
+}
+
+export default function Whiteboard({ boardId, accessLevel }: WhiteboardProps) {
   const [items, setItems] = useState<BoardItem[]>([]);
 
   const loadItems = useCallback(async () => {
@@ -46,7 +51,9 @@ export default function Whiteboard({ boardId }: { boardId: number }) {
 
   return (
     <div>
-      <AddItemBar boardId={boardId} onAdd={addItem} onUploaded={loadItems} />
+      {accessLevel !== "viewer" && (
+        <AddItemBar boardId={boardId} onAdd={addItem} onUploaded={loadItems} />
+      )}
       <DndContext onDragEnd={handleDragEnd}>
         <div className="canvas">
           <div className="canvas-inner">

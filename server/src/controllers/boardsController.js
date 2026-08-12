@@ -2,7 +2,12 @@ const pool = require("../db.js");
 
 exports.getBoards = async (req, res) => {
   const result = await pool.query(
-    "SELECT * FROM boards WHERE user_id = $1 ORDER BY created_at DESC",
+    `SELECT b.*, 'owner' AS access_level FROM boards b WHERE b.user_id = $1
+     UNION
+     SELECT b.*, bc.role AS access_level FROM boards b
+     JOIN board_collaborators bc ON bc.board_id = b.id
+     WHERE bc.user_id = $1
+     ORDER BY created_at DESC`,
     [req.userId],
   );
   res.json(result.rows);
@@ -29,10 +34,19 @@ exports.deleteBoard = async (req, res) => {
 };
 
 // helper other controllers can reuse to confirm a board belongs to this user
-exports.assertOwnsBoard = async (boardId, userId) => {
-  const result = await pool.query(
+// returns 'owner' | 'editor' | 'viewer' | null
+exports.getAccessLevel = async (boardId, userId) => {
+  const ownerCheck = await pool.query(
     "SELECT id FROM boards WHERE id = $1 AND user_id = $2",
     [boardId, userId],
   );
-  return result.rows.length > 0;
+  if (ownerCheck.rows.length > 0) return "owner";
+
+  const collabCheck = await pool.query(
+    "SELECT role FROM board_collaborators WHERE board_id = $1 AND user_id = $2",
+    [boardId, userId],
+  );
+  if (collabCheck.rows.length > 0) return collabCheck.rows[0].role;
+
+  return null;
 };

@@ -34,3 +34,17 @@ export interface NewBoardItem {
   pos_x?: number;
   pos_y?: number;
 }
+
+export interface Board {
+  id: number;
+  user_id: number;
+  name: string;
+  created_at: string;
+  access_level: "owner" | "editor" | "viewer";
+}
+
+export interface Collaborator {
+  id: number;
+  email: string;
+  role: "editor" | "viewer";
+}

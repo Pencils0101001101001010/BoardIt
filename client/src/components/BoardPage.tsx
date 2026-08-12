@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import Whiteboard from "./Whiteboard";
 import BoardSidebar from "./BoardSidebar";
+
 import api from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
 import { type Board } from "../types";
+import ShareModal from "./SharedModal";
 
 export default function BoardPage() {
   const [boards, setBoards] = useState<Board[]>([]);
   const [activeBoardId, setActiveBoardId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showShareModal, setShowShareModal] = useState(false);
   const { user, logout } = useAuth();
+  const activeBoard = boards.find((b) => b.id === activeBoardId);
 
   useEffect(() => {
     api.get<Board[]>("/boards").then((res) => {
@@ -45,6 +49,9 @@ export default function BoardPage() {
           <img src={"/favicon.svg"} width={25} /> BoardIt
         </h1>
         <div>
+          {activeBoard && activeBoard.access_level === "owner" && (
+            <button onClick={() => setShowShareModal(true)}>Share</button>
+          )}
           <span>{user?.email}</span>
           <button onClick={logout}>Log out</button>
         </div>
@@ -58,13 +65,24 @@ export default function BoardPage() {
           onDelete={deleteBoard}
         />
         <div className="board-area">
-          {activeBoardId ? (
-            <Whiteboard key={activeBoardId} boardId={activeBoardId} />
+          {activeBoard ? (
+            <Whiteboard
+              key={activeBoardId}
+              boardId={activeBoard.id}
+              accessLevel={activeBoard.access_level}
+            />
           ) : (
             <p>No boards yet — create one to get started.</p>
           )}
         </div>
       </div>
+
+      {showShareModal && activeBoard && (
+        <ShareModal
+          boardId={activeBoard.id}
+          onClose={() => setShowShareModal(false)}
+        />
+      )}
     </div>
   );
 }

@@ -40,7 +40,7 @@ export default function LoginPage() {
         onChange={(e) => setPassword(e.target.value)}
         required
       />
-      <button type="submit">Log in</button>
+      <button type="submit">Register</button>
       <p>
         Have account? <Link to="/login">Login</Link>
       </p>

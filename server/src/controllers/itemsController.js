@@ -1,12 +1,11 @@
 const pool = require("../db.js");
-const { assertOwnsBoard } = require("./boardsController.js");
+const { getAccessLevel } = require("./boardsController.js");
 
 //GET /api/boards/:boardId/items
 exports.getItems = async (req, res) => {
   const { boardId } = req.params;
-  if (!(await assertOwnsBoard(boardId, req.userId))) {
-    return res.status(404).json({ error: "Board not found." });
-  }
+  const access = await getAccessLevel(boardId, req.userId);
+  if (!access) return res.status(404).json({ error: "Board not found" });
 
   const result = await pool.query(
     "SELECT * FROM items WHERE board_id = $1 ORDER BY created_at",
@@ -19,10 +18,10 @@ exports.getItems = async (req, res) => {
 //POST /api/boards/:boardId/items
 exports.createItem = async (req, res) => {
   const { boardId } = req.params;
-
-  if (!(await assertOwnsBoard(boardId, req.userId))) {
-    return res.status(404).json({ error: "Board not found." });
-  }
+  const access = await getAccessLevel(boardId, req.userId);
+  if (!access) return res.status(404).json({ error: "Board not found" });
+  if (access === "viewer")
+    return res.status(403).json({ error: "Read-only access" });
 
   const { type, url, title, thumbnail_url, pos_x, pos_y } = req.body;
   const result = await pool.query(
@@ -36,9 +35,11 @@ exports.createItem = async (req, res) => {
 // POST /api/boards/:boardId/items/upload  (multipart/form-data, field name "image")
 exports.uploadItem = async (req, res) => {
   const { boardId } = req.params;
-  if (!(await assertOwnsBoard(boardId, req.userId))) {
-    return res.status(404).json({ error: "Board not found" });
-  }
+  const access = await getAccessLevel(boardId, req.userId);
+  if (!access) return res.status(404).json({ error: "Board not found" });
+  if (access === "viewer")
+    return res.status(403).json({ error: "Read-only access" });
+
   if (!req.file) {
     return res.status(400).json({ error: "No image file provided" });
   }
@@ -53,10 +54,24 @@ exports.uploadItem = async (req, res) => {
 };
 
 // PATCH /api/items/:id  (used for dragging / resizing / editing)
-
 exports.updateItem = async (req, res) => {
   const { id } = req.params;
   const { pos_x, pos_y, width, height, title } = req.body;
+
+  // items don't carry board access info directly, so look up their board first
+  const itemLookup = await pool.query(
+    "SELECT board_id FROM items WHERE id = $1",
+    [id],
+  );
+  if (itemLookup.rows.length === 0) {
+    return res.status(404).json({ error: "Item not found." });
+  }
+  const { board_id } = itemLookup.rows[0];
+
+  const access = await getAccessLevel(board_id, req.userId);
+  if (!access) return res.status(404).json({ error: "Item not found." });
+  if (access === "viewer")
+    return res.status(403).json({ error: "Read-only access" });
 
   const result = await pool.query(
     `UPDATE items SET
@@ -66,26 +81,31 @@ exports.updateItem = async (req, res) => {
        height = COALESCE($4, height),
        title = COALESCE($5, title)
      WHERE id = $6
-       AND board_id IN (SELECT id FROM boards WHERE user_id = $7)
      RETURNING *`,
-    [pos_x, pos_y, width, height, title, id, req.userId],
+    [pos_x, pos_y, width, height, title, id],
   );
-
-  if (result.rows.length === 0)
-    return res.status(404).json({ error: "Item not found." });
 
   res.json(result.rows[0]);
 };
 
 // DELETE /api/items/:id
 exports.deleteItem = async (req, res) => {
-  const result = await pool.query(
-    `DELETE FROM items WHERE id = $1
-       AND board_id IN (SELECT id FROM boards WHERE user_id = $2)
-     RETURNING id`,
-    [req.params.id, req.userId],
+  const { id } = req.params;
+
+  const itemLookup = await pool.query(
+    "SELECT board_id FROM items WHERE id = $1",
+    [id],
   );
-  if (result.rows.length === 0)
+  if (itemLookup.rows.length === 0) {
     return res.status(404).json({ error: "Item not found" });
-  res.status(204).send({ message: "Item deleted" });
+  }
+  const { board_id } = itemLookup.rows[0];
+
+  const access = await getAccessLevel(board_id, req.userId);
+  if (!access) return res.status(404).json({ error: "Item not found" });
+  if (access === "viewer")
+    return res.status(403).json({ error: "Read-only access" });
+
+  await pool.query("DELETE FROM items WHERE id = $1", [id]);
+  res.status(204).send();
 };
