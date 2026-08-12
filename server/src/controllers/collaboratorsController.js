@@ -37,7 +37,7 @@ exports.getCollaborators = async (req, res) => {
   if (!access) return res.status(404).json({ error: "Board not found" });
 
   const result = await pool.query(
-    `SELECT bc.id, bc.role, u.email FROM board_collaborators bc
+    `SELECT bc.id, bc.user_id, bc.role, u.email FROM board_collaborators bc
      JOIN users u ON u.id = bc.user_id
      WHERE bc.board_id = $1`,
     [boardId],

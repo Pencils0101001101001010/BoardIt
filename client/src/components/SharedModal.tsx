@@ -70,7 +70,7 @@ export default function ShareModal({
               <span>
                 {c.email} — {c.role}
               </span>
-              <button onClick={() => handleRemove(c.id)}>Remove</button>
+              <button onClick={() => handleRemove(c.user_id)}>Remove</button>
             </li>
           ))}
         </ul>

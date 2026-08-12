@@ -45,6 +45,7 @@ export interface Board {
 
 export interface Collaborator {
   id: number;
+  user_id: number;
   email: string;
   role: "editor" | "viewer";
 }
