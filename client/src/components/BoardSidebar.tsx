@@ -28,6 +28,14 @@ export default function BoardSidebar({
   return (
     <aside className="sidebar">
       <h3>My Boards</h3>
+      <form onSubmit={handleCreate} className="new-board-form">
+        <input
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+          placeholder="New board name..."
+        />
+        <button type="submit">+ Add board</button>
+      </form>
       <ul>
         {boards.map((board) => (
           <li
@@ -54,14 +62,6 @@ export default function BoardSidebar({
           </li>
         ))}
       </ul>
-      <form onSubmit={handleCreate} className="new-board-form">
-        <input
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          placeholder="New board name..."
-        />
-        <button type="submit">+ Add board</button>
-      </form>
     </aside>
   );
 }

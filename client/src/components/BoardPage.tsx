@@ -41,7 +41,9 @@ export default function BoardPage() {
   return (
     <div className="app">
       <header className="topbar">
-        <h1>BoardIt</h1>
+        <h1>
+          <img src={"/favicon.svg"} width={25} /> BoardIt
+        </h1>
         <div>
           <span>{user?.email}</span>
           <button onClick={logout}>Log out</button>

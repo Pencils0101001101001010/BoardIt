@@ -4,7 +4,6 @@
   height: 80vh;
   background-color: #ffffff;
   background-image: url("https://transparenttextures.com/patterns/graphy.png");
-
   border: 1px solid #ddd;
   overflow: hidden;
 }
@@ -16,6 +15,7 @@
   cursor: grab;
   max-width: 240px;
   overflow: hidden;
+  font-family: "Courier New", Courier, monospace;
 }
 .card p,
 .card a {
@@ -45,6 +45,8 @@
 }
 .add-bar {
   display: flex;
+  font-family: "Courier New", Courier, monospace;
+
   gap: 8px;
   margin-bottom: 12px;
 }
@@ -58,6 +60,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  font-family: "Courier New", Courier, monospace;
 }
 .topbar div {
   display: flex;
@@ -89,18 +92,21 @@
 .sidebar {
   width: 200px;
   flex-shrink: 0;
+  font-family: "Courier New", Courier, monospace;
 }
 .sidebar ul {
   list-style: none;
   padding: 0;
   margin: 12px 0;
-  max-height: 400px;
+  max-height: 600px;
   overflow-x: hidden;
   overflow-y: scroll;
 }
 .sidebar li {
   display: flex;
   justify-content: space-between;
+  font-family: "Courier New", Courier, monospace;
+
   align-items: center;
   padding: 6px 8px;
   border-radius: 6px;
@@ -117,6 +123,7 @@
   cursor: pointer;
   font-size: 14px;
   padding: 0;
+  font-family: "Courier New", Courier, monospace;
 }
 .sidebar .board-delete {
   background: none;
@@ -129,6 +136,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  font-family: "Courier New", Courier, monospace;
 }
 .new-board-form input {
   padding: 6px;

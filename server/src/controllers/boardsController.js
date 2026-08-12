@@ -2,7 +2,7 @@ const pool = require("../db.js");
 
 exports.getBoards = async (req, res) => {
   const result = await pool.query(
-    "SELECT * FROM boards WHERE user_id = $1 ORDER BY created_at",
+    "SELECT * FROM boards WHERE user_id = $1 ORDER BY created_at DESC",
     [req.userId],
   );
   res.json(result.rows);
