@@ -49,10 +49,11 @@ export default function BoardPage() {
           <img src={"/favicon.svg"} width={25} /> BoardIt
         </h1>
         <div>
+          {" "}
+          <span>{user?.email}</span>
           {activeBoard && activeBoard.access_level === "owner" && (
             <button onClick={() => setShowShareModal(true)}>Share</button>
           )}
-          <span>{user?.email}</span>
           <button onClick={logout}>Log out</button>
         </div>
       </header>

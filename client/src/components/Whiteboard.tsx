@@ -1,27 +1,49 @@
-import { useEffect, useState, useCallback } from "react";
-import { DndContext, type DragEndEvent } from "@dnd-kit/core";
+import { useEffect, useState, useCallback, useRef } from "react";
+import {
+  DndContext,
+  type DragEndEvent,
+  type DragStartEvent,
+} from "@dnd-kit/core";
 import api from "../../api/client";
 import type { BoardItem, NewBoardItem } from "../types";
 import AddItemBar from "./AddItemBar";
 import ItemCard from "./ItemCard";
 
-interface WhiteboardProps {
+export default function Whiteboard({
+  boardId,
+  accessLevel,
+}: {
   boardId: number;
   accessLevel: "owner" | "editor" | "viewer";
-}
-
-export default function Whiteboard({ boardId, accessLevel }: WhiteboardProps) {
+}) {
   const [items, setItems] = useState<BoardItem[]>([]);
+  const [zIndexes, setZIndexes] = useState<Record<number, number>>({});
+  const nextZ = useRef(1);
+
+  const bringToFront = useCallback((id: number) => {
+    nextZ.current += 1;
+    setZIndexes((prev) => ({ ...prev, [id]: nextZ.current }));
+  }, []);
 
   const loadItems = useCallback(async () => {
     const res = await api.get<BoardItem[]>(`/boards/${boardId}/items`);
     setItems(res.data);
+    // seed initial stacking order by creation order
+    const seeded: Record<number, number> = {};
+    res.data.forEach((item, i) => {
+      seeded[item.id] = i + 1;
+    });
+    nextZ.current = res.data.length + 1;
+    setZIndexes(seeded);
   }, [boardId]);
-  loadItems;
 
   useEffect(() => {
     loadItems();
   }, [loadItems]);
+
+  const handleDragStart = (event: DragStartEvent) => {
+    bringToFront(event.active.id as number);
+  };
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, delta } = event;
@@ -39,9 +61,17 @@ export default function Whiteboard({ boardId, accessLevel }: WhiteboardProps) {
     await api.patch(`/items/${item.id}`, { pos_x: newX, pos_y: newY });
   };
 
+  const handleResize = async (id: number, width: number, height: number) => {
+    setItems((prev) =>
+      prev.map((i) => (i.id === id ? { ...i, width, height } : i)),
+    );
+    await api.patch(`/items/${id}`, { width, height });
+  };
+
   const addItem = async (newItem: NewBoardItem) => {
     const res = await api.post<BoardItem>(`/boards/${boardId}/items`, newItem);
     setItems((prev) => [...prev, res.data]);
+    bringToFront(res.data.id); // new items start on top, which is expected
   };
 
   const deleteItem = async (id: number) => {
@@ -54,11 +84,19 @@ export default function Whiteboard({ boardId, accessLevel }: WhiteboardProps) {
       {accessLevel !== "viewer" && (
         <AddItemBar boardId={boardId} onAdd={addItem} onUploaded={loadItems} />
       )}
-      <DndContext onDragEnd={handleDragEnd}>
+      <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="canvas">
           <div className="canvas-inner">
             {items.map((item) => (
-              <ItemCard key={item.id} item={item} onDelete={deleteItem} />
+              <ItemCard
+                key={item.id}
+                item={item}
+                onDelete={deleteItem}
+                onResize={handleResize}
+                readOnly={accessLevel === "viewer"}
+                zIndex={zIndexes[item.id] ?? 1}
+                onFocus={() => bringToFront(item.id)}
+              />
             ))}
           </div>
         </div>
