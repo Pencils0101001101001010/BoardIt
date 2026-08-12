@@ -1,6 +1,10 @@
 # BoardIt
 
-A Pinterest/Milanote-style whiteboard where you can drop links and images anywhere on a canvas, drag them around, and save them for later. Built with the PERN stack (PostgreSQL, Express, React, Node.js) plus TypeScript on the frontend.
+A style whiteboard where you can add links and images on a canvas to plan out events, drag them around, and save them for later. Built with the PERN stack (PostgreSQL, Express, React, Node.js) plus TypeScript on the frontend.
+
+## Status of project
+
+**Development**
 
 ## Features
 
@@ -25,7 +29,7 @@ A Pinterest/Milanote-style whiteboard where you can drop links and images anywhe
 ### 1. Clone and install
 
 ```bash
-git clone <https://github.com/Pencils0101001101001010/BoardIt.git>
+git clone https://github.com/Pencils0101001101001010/BoardIt.git
 cd boardit
 
 cd server && npm install
