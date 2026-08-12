@@ -1,20 +1,24 @@
-import { useState, type SubmitEvent } from "react";
+import { useState, type SubmitEvent, type ChangeEvent } from "react";
 import type { NewBoardItem, ItemType } from "../types";
+import api from "../../api/client";
 
-export default function AddItemBar({
-  onAdd,
-}: {
+interface Props {
+  boardId: number;
   onAdd: (item: NewBoardItem) => void;
-}) {
+  onUploaded: () => void; // reload items after an upload completes
+}
+
+export default function AddItemBar({ boardId, onAdd, onUploaded }: Props) {
   const [url, setUrl] = useState("");
   const [type, setType] = useState<ItemType>("link");
+  const [uploading, setUploading] = useState(false);
 
   const guessType = (u: string): ItemType =>
     /\.(jpe?g|png|gif|webp|svg)(\?|$)/i.test(u) ? "image" : "link";
 
   const handleUrlChange = (value: string) => {
     setUrl(value);
-    setType(guessType(value)); // auto-guess, but user can still override below
+    setType(guessType(value));
   };
 
   const handleSubmit = (e: SubmitEvent) => {
@@ -31,12 +35,33 @@ export default function AddItemBar({
     setType("link");
   };
 
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("pos_x", String(100 + Math.random() * 300));
+    formData.append("pos_y", String(100 + Math.random() * 300));
+
+    try {
+      await api.post(`/boards/${boardId}/items/upload`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      onUploaded();
+    } finally {
+      setUploading(false);
+      e.target.value = ""; // reset input so the same file can be re-selected
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="add-bar">
       <input
         value={url}
         onChange={(e) => handleUrlChange(e.target.value)}
-        placeholder="Insert a name or Paste a link or image URL..."
+        placeholder="Paste a link or image URL..."
       />
       <label>
         <input
@@ -53,6 +78,16 @@ export default function AddItemBar({
           onChange={() => setType("image")}
         />{" "}
         Image
+      </label>
+
+      <label className="upload-btn">
+        {uploading ? "Uploading..." : "Upload image"}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          hidden
+        />
       </label>
       <button type="submit">Add to board</button>
     </form>

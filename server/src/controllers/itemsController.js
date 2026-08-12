@@ -33,6 +33,25 @@ exports.createItem = async (req, res) => {
   res.status(201).json(result.rows[0]);
 };
 
+// POST /api/boards/:boardId/items/upload  (multipart/form-data, field name "image")
+exports.uploadItem = async (req, res) => {
+  const { boardId } = req.params;
+  if (!(await assertOwnsBoard(boardId, req.userId))) {
+    return res.status(404).json({ error: "Board not found" });
+  }
+  if (!req.file) {
+    return res.status(400).json({ error: "No image file provided" });
+  }
+
+  const { pos_x, pos_y } = req.body;
+  const result = await pool.query(
+    `INSERT INTO items (board_id, type, url, title, pos_x, pos_y)
+     VALUES ($1, 'image', $2, $3, $4, $5) RETURNING *`,
+    [boardId, req.file.path, req.file.originalname, pos_x || 100, pos_y || 100],
+  );
+  res.status(201).json(result.rows[0]);
+};
+
 // PATCH /api/items/:id  (used for dragging / resizing / editing)
 
 exports.updateItem = async (req, res) => {

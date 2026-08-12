@@ -46,7 +46,7 @@ export default function Whiteboard({ boardId }: { boardId: number }) {
 
   return (
     <div>
-      <AddItemBar onAdd={addItem} />
+      <AddItemBar boardId={boardId} onAdd={addItem} onUploaded={loadItems} />
       <DndContext onDragEnd={handleDragEnd}>
         <div className="canvas">
           <div className="canvas-inner">

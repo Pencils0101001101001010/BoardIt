@@ -148,3 +148,11 @@ body {
 .board-area {
   flex: 1;
 }
+
+.upload-btn {
+  padding: 8px 12px;
+  background: #eee;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
