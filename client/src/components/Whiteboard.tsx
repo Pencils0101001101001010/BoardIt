@@ -49,9 +49,11 @@ export default function Whiteboard({ boardId }: { boardId: number }) {
       <AddItemBar onAdd={addItem} />
       <DndContext onDragEnd={handleDragEnd}>
         <div className="canvas">
-          {items.map((item) => (
-            <ItemCard key={item.id} item={item} onDelete={deleteItem} />
-          ))}
+          <div className="canvas-inner">
+            {items.map((item) => (
+              <ItemCard key={item.id} item={item} onDelete={deleteItem} />
+            ))}
+          </div>
         </div>
       </DndContext>
     </div>
