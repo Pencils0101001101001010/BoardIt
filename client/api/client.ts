@@ -10,6 +10,7 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 });
 
 api.interceptors.response.use(
+  //Success handler. This just passes success response through unchanged
   (res) => res,
   (err: AxiosError) => {
     if (err.response?.status === 401) {

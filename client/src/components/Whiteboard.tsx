@@ -94,7 +94,11 @@ export default function Whiteboard({
                 onDelete={deleteItem}
                 onResize={handleResize}
                 readOnly={accessLevel === "viewer"}
-                zIndex={zIndexes[item.id] ?? 1}
+                zIndex={
+                  item.type === "header"
+                    ? (zIndexes[item.id] ?? 1) + 100000
+                    : (zIndexes[item.id] ?? 1)
+                }
                 onFocus={() => bringToFront(item.id)}
               />
             ))}

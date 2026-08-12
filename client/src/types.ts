@@ -10,7 +10,7 @@ export interface Board {
   created_at: string;
 }
 
-export type ItemType = "link" | "image";
+export type ItemType = "link" | "image" | "header";
 
 export interface BoardItem {
   id: number;
@@ -23,6 +23,8 @@ export interface BoardItem {
   pos_y: number;
   width: number;
   height: number;
+  font_size: number;
+  color: string;
   created_at: string;
 }
 
