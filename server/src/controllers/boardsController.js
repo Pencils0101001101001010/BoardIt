@@ -1,6 +1,7 @@
 const pool = require("../db.js");
 
 exports.getBoards = async (req, res) => {
+  // b.* this is an alias for  boards table and its created "boards b" -> FROM boards b
   const result = await pool.query(
     `SELECT b.*, 'owner' AS access_level FROM boards b WHERE b.user_id = $1
      UNION

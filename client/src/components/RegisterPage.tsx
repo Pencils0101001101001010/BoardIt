@@ -17,6 +17,7 @@ export default function LoginPage() {
       await register(email, password);
       navigate("/");
     } catch (err) {
+      // This will return all errors that comes from the server controllers
       const axiosErr = err as AxiosError<{ error: string }>;
       setError(axiosErr.response?.data?.error || "Register failed");
     }

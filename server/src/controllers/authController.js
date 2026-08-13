@@ -16,7 +16,7 @@ exports.register = async (req, res) => {
   if (!email || !password || password.length < 8) {
     return res
       .status(400)
-      .json({ error: "Email and an 8+ password is required." });
+      .json({ error: "Email and an 8+ character password is required." });
   }
 
   const exiting = await pool.query("SELECT id FROM users WHERE email = $1", [

@@ -93,39 +93,6 @@ exports.updateItem = async (req, res) => {
 
   res.json(result.rows[0]);
 };
-// exports.updateItem = async (req, res) => {
-//   const { id } = req.params;
-//   const { pos_x, pos_y, width, height, title } = req.body;
-
-//   // items don't carry board access info directly, so look up their board first
-//   const itemLookup = await pool.query(
-//     "SELECT board_id FROM items WHERE id = $1",
-//     [id],
-//   );
-//   if (itemLookup.rows.length === 0) {
-//     return res.status(404).json({ error: "Item not found." });
-//   }
-//   const { board_id } = itemLookup.rows[0];
-
-//   const access = await getAccessLevel(board_id, req.userId);
-//   if (!access) return res.status(404).json({ error: "Item not found." });
-//   if (access === "viewer")
-//     return res.status(403).json({ error: "Read-only access" });
-
-//   const result = await pool.query(
-//     `UPDATE items SET
-//        pos_x = COALESCE($1, pos_x),
-//        pos_y = COALESCE($2, pos_y),
-//        width = COALESCE($3, width),
-//        height = COALESCE($4, height),
-//        title = COALESCE($5, title)
-//      WHERE id = $6
-//      RETURNING *`,
-//     [pos_x, pos_y, width, height, title, id],
-//   );
-
-//   res.json(result.rows[0]);
-// };
 
 // DELETE /api/items/:id
 exports.deleteItem = async (req, res) => {
