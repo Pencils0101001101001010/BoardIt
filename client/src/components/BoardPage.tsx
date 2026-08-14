@@ -52,7 +52,12 @@ export default function BoardPage() {
           {" "}
           <span>{user?.email}</span>
           {activeBoard && activeBoard.access_level === "owner" && (
-            <button onClick={() => setShowShareModal(true)}>Share</button>
+            <button
+              onClick={() => setShowShareModal(true)}
+              title="Share this board with other users."
+            >
+              Share
+            </button>
           )}
           <button onClick={logout}>Log out</button>
         </div>
