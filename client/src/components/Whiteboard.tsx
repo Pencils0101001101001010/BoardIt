@@ -70,10 +70,16 @@ export default function Whiteboard({
     await api.patch(`/items/${id}`, { width, height });
   };
 
-  const addItem = async (newItem: NewBoardItem) => {
+  // const addItem = async (newItem: NewBoardItem) => {
+  //   const res = await api.post<BoardItem>(`/boards/${boardId}/items`, newItem);
+  //   setItems((prev) => [...prev, res.data]);
+  //   bringToFront(res.data.id); // new items start on top, which is expected
+  // };
+
+  const addItem = async (newItem: NewBoardItem): Promise<void> => {
     const res = await api.post<BoardItem>(`/boards/${boardId}/items`, newItem);
     setItems((prev) => [...prev, res.data]);
-    bringToFront(res.data.id); // new items start on top, which is expected
+    bringToFront(res.data.id);
   };
 
   const deleteItem = async (id: number) => {

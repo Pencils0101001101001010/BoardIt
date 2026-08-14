@@ -272,3 +272,29 @@ body {
   border: none;
   cursor: pointer;
 }
+
+.loader {
+  --color-1: #484646;
+  --size: 1px;
+
+  font-size: calc(20 * var(--size));
+  color: transparent;
+  overflow: hidden;
+  display: inline-block;
+  margin: 0;
+  text-shadow:
+    0 0 var(--color-1),
+    5em 0 var(--color-1);
+  animation: marquee 2s infinite ease;
+}
+.loader:before {
+  content: "Loading";
+}
+
+@keyframes marquee {
+  to {
+    text-shadow:
+      -5em 0 var(--color-1),
+      0 0 var(--color-1);
+  }
+}
