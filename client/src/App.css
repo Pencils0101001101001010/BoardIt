@@ -9,7 +9,7 @@ body {
   background-color: #ffffff;
   border: 1px solid #ddd;
   overflow: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 .canvas-inner {

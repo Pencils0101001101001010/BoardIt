@@ -2,12 +2,14 @@ import { useDraggable } from "@dnd-kit/core";
 import { useState, useRef, useCallback } from "react";
 import type { BoardItem } from "../types";
 
-import api from "../../api/client";
-
 interface Props {
   item: BoardItem;
   onDelete: (id: number) => void;
   onResize: (id: number, width: number, height: number) => void;
+  onUpdate: (
+    id: number,
+    updates: Partial<Pick<BoardItem, "title" | "font_size" | "color">>,
+  ) => Promise<void>;
   readOnly?: boolean;
   zIndex: number;
   onFocus: () => void;
@@ -18,6 +20,7 @@ export default function ItemCard({
   onDelete,
   onResize,
   readOnly,
+  onUpdate,
   zIndex,
   onFocus,
 }: Props) {
@@ -67,12 +70,18 @@ export default function ItemCard({
   }, [item.id, size, onResize]);
 
   const saveHeader = async () => {
+    const previous = {
+      title: item.title,
+      font_size: item.font_size,
+      color: item.color,
+    };
     setEditing(false);
-    await api.patch(`/items/${item.id}`, {
-      title: text,
-      font_size: fontSize,
-      color,
-    });
+    try {
+      await onUpdate(item.id, { title: text, font_size: fontSize, color });
+    } catch (error: any) {
+      console.error(error.message);
+      await onUpdate(item.id, previous); // revert the optimistic change on failure
+    }
   };
 
   const style: React.CSSProperties = {

@@ -70,12 +70,6 @@ export default function Whiteboard({
     await api.patch(`/items/${id}`, { width, height });
   };
 
-  // const addItem = async (newItem: NewBoardItem) => {
-  //   const res = await api.post<BoardItem>(`/boards/${boardId}/items`, newItem);
-  //   setItems((prev) => [...prev, res.data]);
-  //   bringToFront(res.data.id); // new items start on top, which is expected
-  // };
-
   const addItem = async (newItem: NewBoardItem): Promise<void> => {
     const res = await api.post<BoardItem>(`/boards/${boardId}/items`, newItem);
     setItems((prev) => [...prev, res.data]);
@@ -85,6 +79,16 @@ export default function Whiteboard({
   const deleteItem = async (id: number) => {
     await api.delete(`/items/${id}`);
     setItems((prev) => prev.filter((i) => i.id !== id));
+  };
+
+  const handleHeaderUpdate = async (
+    id: number,
+    updates: Partial<Pick<BoardItem, "title" | "font_size" | "color">>,
+  ) => {
+    setItems((prev) =>
+      prev.map((i) => (i.id === id ? { ...i, ...updates } : i)),
+    );
+    await api.patch(`/items/${id}`, updates);
   };
 
   return (
@@ -99,6 +103,7 @@ export default function Whiteboard({
               <ItemCard
                 key={item.id}
                 item={item}
+                onUpdate={handleHeaderUpdate}
                 onDelete={deleteItem}
                 onResize={handleResize}
                 readOnly={accessLevel === "viewer"}
