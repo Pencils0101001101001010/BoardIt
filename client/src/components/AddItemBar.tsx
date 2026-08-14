@@ -90,7 +90,6 @@ export default function AddItemBar({ boardId, onAdd, onUploaded }: Props) {
         />{" "}
         Header
       </label>
-      <button type="submit">Add to board</button>
 
       <label className="upload-btn">
         {uploading ? "Uploading..." : "Upload image"}
@@ -101,6 +100,8 @@ export default function AddItemBar({ boardId, onAdd, onUploaded }: Props) {
           hidden
         />
       </label>
+
+      <button type="submit">Add to board</button>
     </form>
   );
 }
