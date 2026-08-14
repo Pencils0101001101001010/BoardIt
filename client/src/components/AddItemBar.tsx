@@ -66,7 +66,7 @@ export default function AddItemBar({ boardId, onAdd, onUploaded }: Props) {
           type === "header" ? "Header text..." : "Paste a link or image URL..."
         }
       />
-      <label>
+      <label title="Copy and past a link">
         <input
           type="radio"
           checked={type === "link"}
@@ -74,7 +74,7 @@ export default function AddItemBar({ boardId, onAdd, onUploaded }: Props) {
         />{" "}
         Link
       </label>
-      <label>
+      <label title="Once selected, find the image on web you'd like to display and copy its link address and past it in the input bar.">
         <input
           type="radio"
           checked={type === "image"}
@@ -82,7 +82,7 @@ export default function AddItemBar({ boardId, onAdd, onUploaded }: Props) {
         />{" "}
         Image
       </label>
-      <label>
+      <label title="Add a header/Title. You can then double click the header once created to edit it.">
         <input
           type="radio"
           checked={type === "header"}
