@@ -19,7 +19,7 @@ export default function AddItemBar({ boardId, onAdd, onUploaded }: Props) {
 
   const handleUrlChange = (value: string) => {
     setUrl(value);
-    if (type !== "header") setType(guessType(value)); // don't override an explicit header choice
+    if (type !== "header") setType(guessType(value));
   };
 
   const handleSubmit = async (e: SubmitEvent) => {
