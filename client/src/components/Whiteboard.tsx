@@ -47,8 +47,6 @@ export default function Whiteboard({
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, delta } = event;
-    // console.log(delta);
-    // console.log(active);
     const item = items.find((i) => i.id === active.id);
     if (!item) return;
 
